@@ -1,10 +1,13 @@
 const board = document.getElementById("board");
+const canvas = document.getElementById("canvas");
 const imageInput = document.getElementById("imageInput");
 const spreadBtn = document.getElementById("spreadBtn");
 
 let topZ = 1;
 let nextPileId = 1;
 let active = null;
+let panX = 0;
+let panY = 0;
 
 const cards = new Set();
 
@@ -23,6 +26,22 @@ imageInput.addEventListener("change", async (event) => {
 });
 
 spreadBtn.addEventListener("click", () => spreadCards());
+
+board.addEventListener("wheel", (e) => {
+  if (e.ctrlKey || e.metaKey) return;
+  e.preventDefault();
+  panBy(e.deltaX || e.deltaY * 0.5, e.deltaY);
+});
+
+function panBy(dx, dy) {
+  panX += dx;
+  panY += dy;
+  updateCanvasTransform();
+}
+
+function updateCanvasTransform() {
+  canvas.style.transform = `translate(${panX}px, ${panY}px)`;
+}
 
 function readAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -46,7 +65,7 @@ function createCard(src) {
   card.style.zIndex = String(++topZ);
 
   card.addEventListener("pointerdown", onPointerDown);
-  board.appendChild(card);
+  canvas.appendChild(card);
   cards.add(card);
 }
 
@@ -60,6 +79,8 @@ function onPointerDown(event) {
     pointerId: event.pointerId,
     offsetX: event.clientX - cardRect.left,
     offsetY: event.clientY - cardRect.top,
+    startX: parseFloat(card.style.left),
+    startY: parseFloat(card.style.top),
     boardRect,
   };
 
@@ -74,21 +95,25 @@ function onPointerDown(event) {
 
 function onPointerMove(event) {
   if (!active || event.pointerId !== active.pointerId) return;
-  const { card, offsetX, offsetY, boardRect } = active;
+  const { card, offsetX, offsetY, boardRect, startX, startY } = active;
 
-  const x = clamp(
-    event.clientX - boardRect.left - offsetX,
-    -40,
-    board.clientWidth - card.offsetWidth + 40,
-  );
-  const y = clamp(
-    event.clientY - boardRect.top - offsetY,
-    -40,
-    board.clientHeight - card.offsetHeight + 40,
-  );
+  const newX = event.clientX - boardRect.left - offsetX + panX;
+  const newY = event.clientY - boardRect.top - offsetY + panY;
 
-  card.style.left = `${x}px`;
-  card.style.top = `${y}px`;
+  card.style.left = `${newX}px`;
+  card.style.top = `${newY}px`;
+
+  const edgeThreshold = 80;
+  if (event.clientX - boardRect.left < edgeThreshold) {
+    panBy(-12, 0);
+  } else if (event.clientX - boardRect.right > -edgeThreshold) {
+    panBy(12, 0);
+  }
+  if (event.clientY - boardRect.top < edgeThreshold) {
+    panBy(0, -12);
+  } else if (event.clientY - boardRect.bottom > -edgeThreshold) {
+    panBy(0, 12);
+  }
 }
 
 function onPointerUp(event) {
@@ -194,8 +219,8 @@ function spreadCards() {
 
 function randomBoardPosition() {
   return {
-    x: rand(20, Math.max(20, board.clientWidth - 190)),
-    y: rand(20, Math.max(20, board.clientHeight - 250)),
+    x: rand(200, 2000),
+    y: rand(200, 2000),
   };
 }
 

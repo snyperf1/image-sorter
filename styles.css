@@ -70,10 +70,16 @@ button:hover,
 .board {
   position: relative;
   overflow: hidden;
-  width: min(1500px, 100%);
-  margin: 0 auto;
+  width: 100%;
   height: calc(100vh - 74px);
   perspective: 1000px;
+}
+
+.board-canvas {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  will-change: transform;
 }
 
 .board::before {
