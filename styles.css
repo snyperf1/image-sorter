@@ -68,29 +68,22 @@ button:hover,
 }
 
 .board {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: calc(100vh - 74px);
-  perspective: 1000px;
-}
-
-.board-canvas {
-  position: absolute;
-  inset: 0;
-  transform-origin: 0 0;
-  will-change: transform;
+  align-content: start;
 }
 
 .board::before {
-  content: "Upload images, then drag and stack them into piles.";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  grid-column: 1 / -1;
+  content: "Upload images to organize them.";
+  text-align: center;
   color: #95a0c8;
   font-size: 1rem;
-  pointer-events: none;
   opacity: 0.7;
 }
 
@@ -99,18 +92,19 @@ button:hover,
 }
 
 .card {
-  position: absolute;
-  width: 170px;
+  width: 100%;
   aspect-ratio: 5 / 7;
   border-radius: 14px;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.15);
   overflow: hidden;
-  touch-action: none;
-  user-select: none;
-  transform-style: preserve-3d;
-  transition: transform 120ms ease, box-shadow 120ms ease;
   background: #25293a;
+  cursor: grab;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.card:active {
+  cursor: grabbing;
 }
 
 .card img {
@@ -122,6 +116,6 @@ button:hover,
 }
 
 .card.dragging {
-  transform: translateZ(120px) scale(1.12);
+  transform: scale(1.08);
   box-shadow: 0 24px 36px rgba(0, 0, 0, 0.58);
 }
