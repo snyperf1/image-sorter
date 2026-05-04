@@ -70,7 +70,7 @@ button:hover,
 .board {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 2rem;
+  gap: 1rem;
   padding: 2rem;
   overflow-y: auto;
   overflow-x: hidden;
@@ -91,31 +91,101 @@ button:hover,
   display: none;
 }
 
-.card {
+.tile {
+  position: relative;
   width: 100%;
   aspect-ratio: 5 / 7;
+  border-radius: 14px;
+  isolation: isolate;
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
   border-radius: 14px;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.15);
   overflow: hidden;
   background: #25293a;
-  cursor: grab;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease, border-color 140ms ease;
 }
 
-.card:active {
+.top-card {
+  cursor: grab;
+}
+
+.top-card:active {
   cursor: grabbing;
 }
 
-.card img {
+.bento {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  gap: 4px;
+  padding: 4px;
+  background: #141a2a;
+}
+
+.bento img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  pointer-events: none;
+  border-radius: 10px;
 }
 
-.card.dragging {
-  transform: scale(1.08);
+.bento-1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.bento-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.bento-3,
+.bento-4 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.bento-3 img:first-child {
+  grid-column: 1 / -1;
+}
+
+.source-hidden {
+  opacity: 0.24;
+}
+
+.drag-ghost {
+  position: fixed;
+  inset: auto;
+  pointer-events: none;
+  z-index: 9999;
+  transform: scale(1.04) translateZ(0);
   box-shadow: 0 24px 36px rgba(0, 0, 0, 0.58);
+}
+
+.hold-target {
+  outline: 2px solid rgba(111, 149, 255, 0.95);
+  outline-offset: 3px;
+}
+
+.stack-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 20;
+  min-width: 1.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(20, 27, 43, 0.9);
+  border: 1px solid rgba(125, 160, 255, 0.8);
+  color: #dce6ff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
 }
